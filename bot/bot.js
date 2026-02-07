@@ -19,6 +19,10 @@ const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || null; // Your Telegram chat ID
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://your-valentine-site.vercel.app";
 const PORT = process.env.PORT || 3000;
+// Auto-detect SERVER_URL on Render or use environment variable
+const SERVER_URL = process.env.SERVER_URL || 
+                   process.env.RENDER_EXTERNAL_URL || 
+                   `http://localhost:${PORT}`;
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const ADMIN_CHAT_FILE = path.join(__dirname, "admin_chat.json");
 const UPI_ID = process.env.UPI_ID || "mpjani294.personal@oksbi";
@@ -540,8 +544,7 @@ bot.on("photo", async (ctx) => {
     });
 
     // Build the public URL for this photo
-    const serverUrl = process.env.SERVER_URL || `http://localhost:${PORT}`;
-    session.photo = `${serverUrl}/uploads/${filename}`;
+    session.photo = `${SERVER_URL}/uploads/${filename}`;
 
     session.step = "expiry";
     ctx.reply(

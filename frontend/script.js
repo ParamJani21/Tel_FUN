@@ -237,15 +237,22 @@ function setupNoButton() {
     }
 
     // Move to random position within viewport (safe bounds)
+    const container = buttonsContainer.getBoundingClientRect();
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const btnW = noBtn.offsetWidth || 120;
-    const btnH = noBtn.offsetHeight || 50;
-    const pad = isMobile ? 10 : 20;
-    const maxX = Math.max(pad, vw - btnW - pad);
-    const maxY = Math.max(pad + 50, vh - btnH - pad); // 50px top offset for music btn
-    const newX = Math.max(pad, Math.floor(Math.random() * maxX));
-    const newY = Math.max(pad + 50, Math.floor(Math.random() * maxY));
+    const btnW = 140; // Fixed width for calculation
+    const btnH = 60;  // Fixed height for calculation
+    const pad = isMobile ? 20 : 30;
+    
+    // Calculate safe bounds
+    const minX = pad;
+    const maxX = vw - btnW - pad;
+    const minY = pad + 100; // Top padding for music button and header
+    const maxY = vh - btnH - pad - 100; // Bottom padding
+    
+    // Generate random position within safe bounds
+    const newX = minX + Math.floor(Math.random() * Math.max(0, maxX - minX));
+    const newY = minY + Math.floor(Math.random() * Math.max(0, maxY - minY));
 
     noBtn.style.position = "fixed";
     noBtn.style.left = newX + "px";
