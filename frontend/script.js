@@ -31,19 +31,20 @@ const particlesEl = document.getElementById("particles");
 const buttonsContainer = document.getElementById("buttons-container");
 
 // ── Tooltip messages for the No button ──────────────────
-const tooltips = [
-  "Are you sure? 🥺",
-  "Think again! 🦋",
-  "You can't escape love ✨",
-  "Wrong button cutie! →",
-  "Nope, try again 🙈",
-  "Love always finds a way 💜",
-  "Not this one! 🌙",
-  "Really?? 🫧",
-  "The stars say yes 🌟",
-  "Click the pretty one! 🫶",
-];
-let tooltipIndex = 0;
+// (No longer used - kept for reference)
+// const tooltips = [
+//   "Are you sure? 🥺",
+//   "Think again! 🦋",
+//   "You can't escape love ✨",
+//   "Wrong button cutie! →",
+//   "Nope, try again 🙈",
+//   "Love always finds a way 💜",
+//   "Not this one! 🌙",
+//   "Really?? 🫧",
+//   "The stars say yes 🌟",
+//   "Click the pretty one! 🫶",
+// ];
+// let tooltipIndex = 0;
 
 // ── Initialization ──────────────────────────────────────
 (async function init() {
@@ -212,84 +213,47 @@ musicToggle.addEventListener("click", () => {
 });
 
 // ══════════════════════════════════════════════════════════
-//  NO BUTTON — EVASION LOGIC (desktop + mobile)
+//  NO BUTTON — STATIC WITH SHAKE & CLOUD (no evasion)
 // ══════════════════════════════════════════════════════════
 function setupNoButton() {
-  let escapeCount = 0;
-  const isMobile = window.innerWidth <= 768;
-
-  // Helper: move button to random safe position
-  function evade() {
-    escapeCount++;
-    // Cycle tooltip
-    noBtn.setAttribute("data-tooltip", tooltips[escapeCount % tooltips.length]);
-    noBtn.classList.add("show-tooltip");
-    setTimeout(() => noBtn.classList.remove("show-tooltip"), 1200);
-
-    // Randomly shrink / rotate / vanish
-    const effect = Math.random();
-    if (effect < 0.3) {
-      noBtn.classList.add("shrink");
-      setTimeout(() => noBtn.classList.remove("shrink"), 400);
-    } else if (effect < 0.5) {
-      noBtn.classList.add("vanish");
-      setTimeout(() => noBtn.classList.remove("vanish"), 600);
-    }
-
-    // Get actual viewport dimensions
-    const vw = document.documentElement.clientWidth;
-    const vh = document.documentElement.clientHeight;
-    const btnW = noBtn.getBoundingClientRect().width || 140;
-    const btnH = noBtn.getBoundingClientRect().height || 50;
-    const pad = 20;
+  function showAccessDenied() {
+    // 1. Shake the screen
+    document.body.classList.add("shake");
     
-    // Strict safe bounds — button MUST stay fully visible
-    const minX = pad;
-    const minY = pad;
-    const maxX = vw - btnW - pad;
-    const maxY = vh - btnH - pad;
+    // 2. Create and show cloud message
+    const cloud = document.createElement("div");
+    cloud.className = "access-denied-cloud";
+    const text = document.createElement("div");
+    text.className = "access-denied-text";
+    text.textContent = "Access Denied 🚫";
+    cloud.appendChild(text);
+    document.body.appendChild(cloud);
     
-    // Clamp to ensure within bounds even on small screens
-    const safeMaxX = Math.max(minX, maxX);
-    const safeMaxY = Math.max(minY, maxY);
+    // 3. Remove shake class after animation
+    setTimeout(() => {
+      document.body.classList.remove("shake");
+    }, 500);
     
-    const newX = minX + Math.floor(Math.random() * (safeMaxX - minX));
-    const newY = minY + Math.floor(Math.random() * (safeMaxY - minY));
-
-    noBtn.style.position = "fixed";
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
-    noBtn.style.zIndex = "999";
-    noBtn.style.transition = "all 0.25s cubic-bezier(.4,0,.2,1)";
-    noBtn.style.width = "auto";
-    noBtn.style.maxWidth = "none";
-
-    // Grow YES button slightly over time (cap lower on mobile)
-    const maxScale = isMobile ? 1.4 : 1.8;
-    const scale = Math.min(1 + escapeCount * 0.05, maxScale);
-    yesBtn.style.transform = `scale(${scale})`;
+    // 4. Fade out and remove cloud after 2 seconds
+    setTimeout(() => {
+      cloud.style.animation = "cloudFade 0.5s ease-out forwards";
+      setTimeout(() => cloud.remove(), 500);
+    }, 2000);
   }
 
-  // Desktop — mouse hover
-  noBtn.addEventListener("mouseenter", (e) => {
-    e.preventDefault();
-    evade();
-  });
-
-  // Desktop — click fallback
+  // Click handler — show access denied
   noBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    evade();
+    e.stopPropagation();
+    showAccessDenied();
   });
 
-  // Mobile — touch
+  // Touch handler — show access denied
   noBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
-    evade();
+    e.stopPropagation();
+    showAccessDenied();
   }, { passive: false });
-
-  // Initial tooltip
-  noBtn.setAttribute("data-tooltip", tooltips[0]);
 }
 
 // ══════════════════════════════════════════════════════════
