@@ -207,7 +207,15 @@ async function notifyAdmin(photoPath, info) {
 
 // Send payment screenshot to admin with Approve / Reject buttons
 async function notifyAdminPayment(photoFileId, paymentId, info) {
-  if (!adminBot || !adminChatId) return;
+  if (!adminBot) {
+    console.error("Admin bot not initialized");
+    return;
+  }
+  if (!adminChatId) {
+    console.error("Admin chat ID not set - admin needs to send /start to admin bot first");
+    return;
+  }
+
   try {
     const caption =
       `💰 Payment Screenshot\n` +
@@ -216,8 +224,9 @@ async function notifyAdminPayment(photoFileId, paymentId, info) {
       `🆔 Payment ID: ${paymentId}\n` +
       `📅 ${new Date().toLocaleString()}`;
 
+    console.log(`Sending payment notification to admin chat ${adminChatId}`);
+
     // Forward the photo using file_id (from main bot → download → send via admin bot)
-    // We need to download through main bot and send via admin bot
     const fileLink = await bot.telegram.getFileLink(photoFileId);
     const fileUrl = fileLink.href || fileLink.toString();
     const tempPath = path.join(UPLOAD_DIR, `pay_${paymentId}.jpg`);
@@ -234,6 +243,8 @@ async function notifyAdminPayment(photoFileId, paymentId, info) {
         ]),
       }
     );
+
+    console.log(`Payment notification sent successfully for payment ${paymentId}`);
 
     // Clean up temp file after sending
     fs.unlink(tempPath, () => {});
@@ -384,9 +395,20 @@ bot.help((ctx) => {
   ctx.reply(
     "💝 Valentine Proposal Bot — Commands:\n\n" +
     "/start  — Welcome message\n" +
-    "/create — Create a new proposal link\n" +
+    "/pay    — Pay ₹30 and get access to create proposals\n" +
+    "/create — Create a new proposal link (requires payment)\n" +
     "/help   — Show this help\n\n" +
-    "Just follow the steps after /create!"
+    "Admin: Send /start to the admin bot first to link it."
+  );
+});
+
+// ── /admin — Check admin bot status ──────────────────────
+bot.command("admin", (ctx) => {
+  const adminStatus = adminBot ? "✅ Admin bot connected" : "❌ Admin bot not connected";
+  const chatStatus = adminChatId ? `✅ Admin chat linked (${adminChatId})` : "❌ Admin chat not linked - send /start to admin bot";
+  ctx.reply(
+    `🔧 Admin Status:\n${adminStatus}\n${chatStatus}\n\n` +
+    `Admin Bot: @${ADMIN_BOT_TOKEN ? 'connected' : 'not_configured'}`
   );
 });
 
