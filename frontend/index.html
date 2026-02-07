@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Will You Be My Valentine?</title>
+  <meta name="theme-color" content="#1a1033" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Expired Page -->
+  <div id="expired-page" class="hidden">
+    <div class="expired-container">
+      <div class="broken-heart">💔</div>
+      <h1>This love link has expired</h1>
+      <p>Some moments are meant to be cherished in time...</p>
+    </div>
+  </div>
+
+  <!-- Main Proposal Page -->
+  <div id="proposal-page" class="hidden">
+    <!-- Floating Hearts Background -->
+    <div id="hearts-bg"></div>
+    <!-- Sparkle Particles -->
+    <div id="particles"></div>
+
+    <!-- Music Toggle -->
+    <button id="music-toggle" title="Toggle Music">🎵</button>
+    <audio id="bg-music" loop>
+      <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div class="main-content">
+      <div class="proposal-card">
+        <!-- Photo Section -->
+        <div id="photo-section" class="hidden">
+          <div class="heart-frame">
+            <img id="photo-img" src="" alt="Valentine" />
+          </div>
+          <div id="photo-hearts"></div>
+        </div>
+
+        <!-- No-photo fallback animation -->
+        <div id="no-photo-section" class="hidden">
+          <div class="lottie-heart">
+            <div class="pulse-heart">✨🤍✨</div>
+          </div>
+        </div>
+
+        <h1 id="heading" class="typewriter"></h1>
+
+        <div class="buttons-container" id="buttons-container">
+          <button id="yes-btn" class="btn yes-btn" onclick="sayYes()">
+            Yes please! ✨
+          </button>
+          <button id="no-btn" class="btn no-btn">
+            Hmm no 🙈
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Celebration Page -->
+  <div id="celebration-page" class="hidden">
+    <div id="confetti-canvas"></div>
+    <div class="celebration-content">
+      <div class="glow-flash"></div>
+      <h1 id="celeb-heading" class="celeb-text"></h1>
+      <p class="celeb-sub">This is the best YES ever! �✨</p>
+      <div id="celeb-photo-section" class="hidden">
+        <div class="heart-frame celebration-frame">
+          <img id="celeb-photo" src="" alt="Valentine" />
+        </div>
+      </div>
+      <div class="floating-hearts-celeb" id="floating-hearts-celeb"></div>
+      <button class="share-btn" onclick="shareLink()">Share 💌</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: valentine-bot
+    runtime: node
+    buildCommand: cd bot && npm install
+    startCommand: cd bot && node bot.js
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_BOT_TOKEN
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: UPI_ID
+        sync: false
+      - key: PRICE_INR
+        sync: false
+      - key: PORT
+        fromService:
+          type: web
+          name: valentine-bot
+          property: port

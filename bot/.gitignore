@@ -1,0 +1,5 @@
+node_modules/
+.env
+valentine.db
+uploads/
+admin_chat.json
