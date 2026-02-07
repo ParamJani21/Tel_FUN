@@ -3,6 +3,7 @@
    ======================================================= */
 
 const path = require("path");
+// Load .env file in development, but don't fail in production
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 const { Telegraf, Markup } = require("telegraf");
 const { v4: uuidv4 } = require("uuid");
