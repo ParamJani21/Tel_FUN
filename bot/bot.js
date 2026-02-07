@@ -20,9 +20,9 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || null; // Your Telegram chat I
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://your-valentine-site.vercel.app";
 const PORT = process.env.PORT || 3000;
 // Auto-detect SERVER_URL on Render or use environment variable
-const SERVER_URL = process.env.SERVER_URL || 
+const SERVER_URL = (process.env.SERVER_URL || 
                    process.env.RENDER_EXTERNAL_URL || 
-                   `http://localhost:${PORT}`;
+                   `http://localhost:${PORT}`).replace(/\/$/, ''); // Remove trailing slash
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const ADMIN_CHAT_FILE = path.join(__dirname, "admin_chat.json");
 const UPI_ID = process.env.UPI_ID || "mpjani294.personal@oksbi";

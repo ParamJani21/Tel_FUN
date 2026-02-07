@@ -236,23 +236,25 @@ function setupNoButton() {
       setTimeout(() => noBtn.classList.remove("vanish"), 600);
     }
 
-    // Move to random position within viewport (safe bounds)
-    const container = buttonsContainer.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const btnW = 140; // Fixed width for calculation
-    const btnH = 60;  // Fixed height for calculation
-    const pad = isMobile ? 20 : 30;
+    // Get actual viewport dimensions
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    const btnW = noBtn.getBoundingClientRect().width || 140;
+    const btnH = noBtn.getBoundingClientRect().height || 50;
+    const pad = 20;
     
-    // Calculate safe bounds
+    // Strict safe bounds — button MUST stay fully visible
     const minX = pad;
+    const minY = pad;
     const maxX = vw - btnW - pad;
-    const minY = pad + 100; // Top padding for music button and header
-    const maxY = vh - btnH - pad - 100; // Bottom padding
+    const maxY = vh - btnH - pad;
     
-    // Generate random position within safe bounds
-    const newX = minX + Math.floor(Math.random() * Math.max(0, maxX - minX));
-    const newY = minY + Math.floor(Math.random() * Math.max(0, maxY - minY));
+    // Clamp to ensure within bounds even on small screens
+    const safeMaxX = Math.max(minX, maxX);
+    const safeMaxY = Math.max(minY, maxY);
+    
+    const newX = minX + Math.floor(Math.random() * (safeMaxX - minX));
+    const newY = minY + Math.floor(Math.random() * (safeMaxY - minY));
 
     noBtn.style.position = "fixed";
     noBtn.style.left = newX + "px";
