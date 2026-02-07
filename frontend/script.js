@@ -419,20 +419,22 @@ function heartBurst() {
 
 // ── Share Button ────────────────────────────────────────
 function shareLink() {
-  const url = window.location.href;
+  const botLink = "https://t.me/p3rsonal_999_bot";
+  const shareText = "Wanna share to your friend...! 💝\n\nCreate your own magical Valentine proposal that they can't say NO to! ✨";
+  
   if (navigator.share) {
     navigator.share({
-      title: "Be My Valentine! 💝",
-      text: `${NAME}, will you be my Valentine?`,
-      url: url,
+      title: "Valentine Proposal Bot 💝",
+      text: shareText,
+      url: botLink,
     }).catch(() => {});
   } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard.writeText(`${shareText}\n\n${botLink}`).then(() => {
       const btn = document.querySelector(".share-btn");
       btn.textContent = "Copied! ✅";
       setTimeout(() => (btn.textContent = "Share 💌"), 2000);
     });
   } else {
-    prompt("Copy this link:", url);
+    prompt("Copy this link:", `${shareText}\n\n${botLink}`);
   }
 }
