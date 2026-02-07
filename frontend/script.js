@@ -81,8 +81,17 @@ let tooltipIndex = 0;
   // 3. Photo or no-photo
   if (PHOTO) {
     photoSection.classList.remove("hidden");
-    photoImg.src = decodeURIComponent(PHOTO);
-    spawnPhotoHearts();
+    // Handle photo URL - it's already a full URL from the API
+    photoImg.src = PHOTO;
+    photoImg.onerror = () => {
+      // If image fails to load, show no-photo fallback
+      console.error("Failed to load image:", PHOTO);
+      photoSection.classList.add("hidden");
+      noPhotoSection.classList.remove("hidden");
+    };
+    photoImg.onload = () => {
+      spawnPhotoHearts();
+    };
   } else {
     noPhotoSection.classList.remove("hidden");
   }
