@@ -3,7 +3,7 @@
    ======================================================= */
 
 // ── Configuration ───────────────────────────────────────
-const API_BASE = "https://your-render-bot-url.onrender.com"; // Change to your deployed bot URL for production
+const API_BASE = "https://tel-fun.onrender.com"; // Change to your deployed bot URL for production
 
 // ── URL Parameters ──────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
