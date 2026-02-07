@@ -19,7 +19,7 @@ const expiredPage = document.getElementById("expired-page");
 const proposalPage = document.getElementById("proposal-page");
 const celebrationPage = document.getElementById("celebration-page");
 const heading = document.getElementById("heading");
-const noBtn = document.getElementById("bunny-no");
+const noBtn = document.getElementById("no-btn");
 const yesBtn = document.getElementById("yes-btn");
 const photoSection = document.getElementById("photo-section");
 const noPhotoSection = document.getElementById("no-photo-section");
@@ -30,24 +30,20 @@ const heartsBg = document.getElementById("hearts-bg");
 const particlesEl = document.getElementById("particles");
 const buttonsContainer = document.getElementById("buttons-container");
 
-// ── Tooltip messages for the bunny ──────────────────────
-const bunnyMessages = [
-  "Hmm no 🙈",
+// ── Tooltip messages for the No button ──────────────────
+const tooltips = [
   "Are you sure? 🥺",
   "Think again! 🦋",
   "You can't escape love ✨",
-  "Wrong one cutie! →",
-  "Nope nope! 🙈",
-  "Love always wins 💜",
+  "Wrong button cutie! →",
+  "Nope, try again 🙈",
+  "Love always finds a way 💜",
   "Not this one! 🌙",
   "Really?? 🫧",
-  "Stars say yes 🌟",
+  "The stars say yes 🌟",
   "Click the pretty one! 🫶",
-  "I'm getting shy... 🐰",
-  "Still no? 😤",
-  "Fine I'll shrink 🥲",
-  "...okay bye 👋",
 ];
+let tooltipIndex = 0;
 
 // ── Initialization ──────────────────────────────────────
 (async function init() {
@@ -216,116 +212,92 @@ musicToggle.addEventListener("click", () => {
 });
 
 // ══════════════════════════════════════════════════════════
-//  BUNNY "NO" — CUTE EVASION LOGIC
+//  NO BUTTON — EVASION LOGIC (desktop + mobile)
 // ══════════════════════════════════════════════════════════
 function setupNoButton() {
   let escapeCount = 0;
   const isMobile = window.innerWidth <= 768;
-  const bunny = document.getElementById("bunny-no");
-  const thoughtCloud = bunny.querySelector(".thought-cloud");
-  const thoughtText = bunny.querySelector(".thought-text");
-  const bunnyChar = bunny.querySelector(".bunny-character");
 
-  // Show bunny
-  bunny.classList.remove("hidden");
-
-  // Bunny characters to cycle through
-  const bunnyFaces = ["🐰", "🐇", "🙈", "🐾", "🐰"];
-
-  function moveBunny() {
+  // Helper: move button to random safe position
+  function evade() {
     escapeCount++;
+    // Cycle tooltip
+    noBtn.setAttribute("data-tooltip", tooltips[escapeCount % tooltips.length]);
+    noBtn.classList.add("show-tooltip");
+    setTimeout(() => noBtn.classList.remove("show-tooltip"), 1200);
 
-    // Update thought bubble text
-    const msg = bunnyMessages[Math.min(escapeCount, bunnyMessages.length - 1)];
-    thoughtText.textContent = msg;
-    thoughtCloud.classList.add("pop");
-    setTimeout(() => thoughtCloud.classList.remove("pop"), 300);
-
-    // Change bunny face sometimes
-    if (escapeCount % 3 === 0) {
-      bunnyChar.textContent = bunnyFaces[Math.floor(Math.random() * bunnyFaces.length)];
+    // Randomly shrink / rotate / vanish
+    const effect = Math.random();
+    if (effect < 0.3) {
+      noBtn.classList.add("shrink");
+      setTimeout(() => noBtn.classList.remove("shrink"), 400);
+    } else if (effect < 0.5) {
+      noBtn.classList.add("vanish");
+      setTimeout(() => noBtn.classList.remove("vanish"), 600);
     }
 
-    // Scared animation
-    bunny.classList.add("scared");
-    setTimeout(() => bunny.classList.remove("scared"), 500);
-
-    // Hop animation
-    bunny.classList.add("hopping");
-    setTimeout(() => bunny.classList.remove("hopping"), 500);
-
-    // Move to new position within screen bounds
+    // Get actual viewport dimensions
     const vw = document.documentElement.clientWidth;
     const vh = document.documentElement.clientHeight;
-    const bunnyW = 100; // approximate width
-    const bunnyH = 120; // approximate height including thought bubble
-    const pad = 15;
-
+    const btnW = noBtn.getBoundingClientRect().width || 140;
+    const btnH = noBtn.getBoundingClientRect().height || 50;
+    const pad = 20;
+    
+    // Strict safe bounds — button MUST stay fully visible
     const minX = pad;
     const minY = pad;
-    const maxX = Math.max(minX, vw - bunnyW - pad);
-    const maxY = Math.max(minY, vh - bunnyH - pad);
+    const maxX = vw - btnW - pad;
+    const maxY = vh - btnH - pad;
+    
+    // Clamp to ensure within bounds even on small screens
+    const safeMaxX = Math.max(minX, maxX);
+    const safeMaxY = Math.max(minY, maxY);
+    
+    const newX = minX + Math.floor(Math.random() * (safeMaxX - minX));
+    const newY = minY + Math.floor(Math.random() * (safeMaxY - minY));
 
-    const newX = minX + Math.floor(Math.random() * (maxX - minX));
-    const newY = minY + Math.floor(Math.random() * (maxY - minY));
+    noBtn.style.position = "fixed";
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+    noBtn.style.zIndex = "999";
+    noBtn.style.transition = "all 0.25s cubic-bezier(.4,0,.2,1)";
+    noBtn.style.width = "auto";
+    noBtn.style.maxWidth = "none";
 
-    // Remove default positioning and use calculated position
-    bunny.style.position = "fixed";
-    bunny.style.left = newX + "px";
-    bunny.style.top = newY + "px";
-    bunny.style.bottom = "auto";
-    bunny.style.right = "auto";
-
-    // Progressively shrink bunny
-    const shrinkLevel = Math.min(Math.floor(escapeCount / 3), 5);
-    // Remove all shrinking classes
-    for (let i = 1; i <= 5; i++) {
-      bunny.classList.remove(`shrinking-${i}`);
-    }
-    if (shrinkLevel > 0) {
-      bunny.classList.add(`shrinking-${shrinkLevel}`);
-    }
-
-    // Grow YES button
+    // Grow YES button slightly over time (cap lower on mobile)
     const maxScale = isMobile ? 1.4 : 1.8;
     const scale = Math.min(1 + escapeCount * 0.05, maxScale);
     yesBtn.style.transform = `scale(${scale})`;
-
-    // After many attempts, bunny gets really tiny
-    if (escapeCount >= 15) {
-      bunny.style.opacity = "0.2";
-      bunny.style.transform = "scale(0.2)";
-      thoughtCloud.style.display = "none";
-    }
   }
 
   // Desktop — mouse hover
-  bunny.addEventListener("mouseenter", (e) => {
+  noBtn.addEventListener("mouseenter", (e) => {
     e.preventDefault();
-    moveBunny();
+    evade();
   });
 
-  // Desktop — click
-  bunny.addEventListener("click", (e) => {
+  // Desktop — click fallback
+  noBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    moveBunny();
+    evade();
   });
 
   // Mobile — touch
-  bunny.addEventListener("touchstart", (e) => {
+  noBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
-    moveBunny();
+    evade();
   }, { passive: false });
+
+  // Initial tooltip
+  noBtn.setAttribute("data-tooltip", tooltips[0]);
 }
 
 // ══════════════════════════════════════════════════════════
 //  YES — CELEBRATION
 // ══════════════════════════════════════════════════════════
 function sayYes() {
-  // Hide proposal and bunny, show celebration
+  // Hide proposal, show celebration
   proposalPage.classList.add("hidden");
-  const bunny = document.getElementById("bunny-no");
-  if (bunny) bunny.classList.add("hidden");
   celebrationPage.classList.remove("hidden");
 
   // Set celebration text
